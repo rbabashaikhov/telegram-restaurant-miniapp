@@ -1,0 +1,34 @@
+import 'dotenv/config';
+import { db } from './schema.js';
+import { seed } from './seed.js';
+
+db.exec(`
+  PRAGMA foreign_keys = OFF;
+  DELETE FROM loyalty_transactions;
+  DELETE FROM loyalty_accounts;
+  DELETE FROM order_item_modifiers;
+  DELETE FROM order_items;
+  DELETE FROM orders;
+  DELETE FROM reservation_history;
+  DELETE FROM reservations;
+  DELETE FROM waitlist_entries;
+  DELETE FROM guest_preferences;
+  DELETE FROM guests;
+  DELETE FROM modifiers;
+  DELETE FROM modifier_groups;
+  DELETE FROM menu_items;
+  DELETE FROM menu_categories;
+  DELETE FROM table_blocks;
+  DELETE FROM table_combination_members;
+  DELETE FROM table_combinations;
+  DELETE FROM tables;
+  DELETE FROM dining_areas;
+  DELETE FROM locations;
+  DELETE FROM restaurants;
+  DELETE FROM business_events;
+  DELETE FROM idempotency_keys;
+  DELETE FROM order_counters;
+  PRAGMA foreign_keys = ON;
+`);
+seed(db);
+console.log('Seed reset complete');

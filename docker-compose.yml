@@ -1,0 +1,43 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      ALLOW_DEMO_MODE: ${ALLOW_DEMO_MODE:-true}
+      DATABASE_PATH: /data/restaurant.db
+      TZ: ${TZ:-Europe/Moscow}
+      DATA_MODE: ${DATA_MODE:-local}
+      POS_ADAPTER: ${POS_ADAPTER:-local}
+      PAYMENT_ADAPTER: ${PAYMENT_ADAPTER:-mock}
+      EVENT_ADAPTER: ${EVENT_ADAPTER:-local}
+      EVENT_WEBHOOK_URL: ${EVENT_WEBHOOK_URL:-}
+      BUSINESS_NAME: "Nord Bistro"
+      APP_TITLE: "Nord Bistro"
+      APP_DESCRIPTION: "Современная кухня на Цветном бульваре."
+      CURRENCY: RUB
+      BRAND_ACCENT: "#B85C38"
+      RESERVATION_DURATION_MINUTES: "120"
+      RESERVATION_BUFFER_MINUTES: "15"
+      LOYALTY_EARN_PERCENT: "5"
+      FEATURE_DEMO_TOUR: "true"
+      FEATURE_DEMO_ADMIN_PREVIEW: "true"
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-nord-bistro-demo}
+    volumes:
+      - sqlite_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  sqlite_data:
