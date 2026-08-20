@@ -163,7 +163,14 @@ export function MenuItemPage() {
           ))}
         </section>
       ))}
-      <textarea placeholder="Комментарий к блюду" value={comment} onChange={(e) => setComment(e.target.value)} />
+      <label>
+        Пожелание к блюду
+        <textarea
+          placeholder="Например: без лука, соус отдельно"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
+      </label>
       {error && <ErrorBanner error={error} />}
       <button
         type="button"

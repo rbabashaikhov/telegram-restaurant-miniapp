@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { MenuItem } from '../types';
-import { addLine, cartTotal, changeQty, lineKey } from './cart';
+import { addLine, cartTotal, changeQty, lineKey, toPayload } from './cart';
 
 const item = {
   id: 14,
@@ -44,5 +44,13 @@ describe('cart', () => {
     const added = addLine([], item, []);
     const lines = changeQty(added, added[0].key, -1);
     expect(lines).toHaveLength(0);
+  });
+
+  it('keeps a dish comment on the line without treating it as a modifier', () => {
+    const lines = addLine([], item, [10], 'без лука, соус отдельно');
+    expect(lines[0].comment).toBe('без лука, соус отдельно');
+    expect(lines[0].unitPrice).toBe(870);
+    expect(toPayload(lines)[0].comment).toBe('без лука, соус отдельно');
+    expect(lineKey(14, [10], 'без лука, соус отдельно')).not.toBe(lineKey(14, [10]));
   });
 });

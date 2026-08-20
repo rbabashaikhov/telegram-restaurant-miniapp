@@ -105,4 +105,17 @@ describe('orders', () => {
     const completed = updateOrderStatus(world.providers, order.id, 'completed');
     expect(completed.status).toBe('completed');
   });
+
+  it('persists an item comment without treating it as a priced modifier', () => {
+    const order = createOrder(world.providers, {
+      guestTelegram: world.user,
+      locationId: 1,
+      type: 'takeaway',
+      items: [{ menuItemId: 21, quantity: 1, modifierIds: [], comment: 'без лука, соус отдельно' }],
+    });
+    expect(order.items[0].comment).toBe('без лука, соус отдельно');
+    expect(order.items[0].modifiers).toHaveLength(0);
+    const stored = world.providers.orders.getById(order.id);
+    expect(stored?.items[0].comment).toBe('без лука, соус отдельно');
+  });
 });

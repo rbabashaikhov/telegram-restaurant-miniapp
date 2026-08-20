@@ -137,6 +137,12 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.03e
 .choice { width: 100%; text-align: left; margin-bottom: 8px; display: grid; gap: 4px; }
 .check { display: flex; gap: 10px; align-items: center; margin: 10px 0; }
 
+label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
 textarea, input {
   width: 100%;
   border: 1px solid var(--line);
@@ -184,6 +190,20 @@ textarea, input {
 }
 .demo-badge { background: var(--wine); color: #fff; border-radius: 999px; padding: 4px 10px; font-size: 12px; }
 .demo-chrome-link { background: none; border: 0; color: var(--accent); font-weight: 600; text-decoration: none; }
+.demo-chrome-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
 
 .demo-sheet-backdrop, .demo-tour-layer { position: fixed; inset: 0; z-index: 40; }
 .demo-sheet-backdrop { background: rgba(42, 33, 24, 0.45); display: grid; place-items: end center; }
@@ -196,9 +216,14 @@ textarea, input {
 .demo-tour-nav { display: flex; gap: 8px; }
 
 .admin-shell { max-width: 980px; margin: 0 auto; padding: 20px; }
-.admin-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.admin-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
 .admin-nav a { color: var(--accent); }
+.admin-nav .btn { color: var(--ink); }
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.attention-box { margin-top: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 16px; }
+.attention-box h2 { margin: 0 0 10px; }
+.attention-box .admin-row { margin-bottom: 0; padding: 8px 0; border-top: 1px solid var(--line); }
+.attention-box .admin-row:first-of-type { border-top: 0; }
 .admin-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; text-decoration: none; }
 .admin-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .admin-actions button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 10px; }

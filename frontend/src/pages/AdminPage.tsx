@@ -26,6 +26,11 @@ function AdminNav({ readOnly }: { readOnly?: boolean }) {
   const base = readOnly ? '/demo/admin' : '/admin';
   return (
     <nav className="admin-nav">
+      {readOnly && (
+        <Link className="btn btn-secondary" to="/">
+          Открыть клиентское приложение
+        </Link>
+      )}
       <Link to={base}>Dashboard</Link>
       <Link to={`${base}/reservations`}>Брони</Link>
       <Link to={`${base}/tables`}>Столы</Link>
@@ -40,9 +45,30 @@ function AdminNav({ readOnly }: { readOnly?: boolean }) {
 
 export function AdminPage({ readOnly = false }: { readOnly?: boolean }) {
   const [kpis, setKpis] = useState<DashboardKpis | null>(null);
+  const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   useEffect(() => {
-    (readOnly ? api.getDemoDashboard() : api.getAdminDashboard()).then(setKpis).catch(() => setKpis(null));
+    const dash = readOnly ? api.getDemoDashboard() : api.getAdminDashboard();
+    const wait = readOnly ? api.getDemoWaitlist() : api.getAdminWaitlist();
+    const orderList = readOnly ? api.getDemoOrders() : api.getAdminOrders();
+    const reservationList = readOnly ? api.getDemoReservations() : api.getAdminReservations();
+    dash.then(setKpis).catch(() => setKpis(null));
+    wait.then(setWaitlist).catch(() => setWaitlist([]));
+    orderList.then(setOrders).catch(() => setOrders([]));
+    reservationList.then(setReservations).catch(() => setReservations([]));
   }, [readOnly]);
+  const base = readOnly ? '/demo/admin' : '/admin';
+  const waitingCount = waitlist.filter((item) => item.status === 'waiting').length;
+  const activeOrders = orders.filter((item) => !['completed', 'cancelled'].includes(item.status)).length;
+  const pendingReservations = reservations.filter((item) => item.status === 'pending').length;
+  const noShows = kpis?.noShowCount ?? 0;
+  const attention = [
+    waitingCount > 0 && { to: `${base}/waitlist`, label: 'Waitlist ожидает', value: waitingCount },
+    activeOrders > 0 && { to: `${base}/orders`, label: 'Активные заказы', value: activeOrders },
+    noShows > 0 && { to: `${base}/reservations`, label: 'No-show', value: noShows },
+    pendingReservations > 0 && { to: `${base}/reservations`, label: 'Брони ждут подтверждения', value: pendingReservations },
+  ].filter(Boolean) as Array<{ to: string; label: string; value: number }>;
   const inner = (
     <div className="admin-shell">
       <AdminNav readOnly={readOnly} />
@@ -59,6 +85,17 @@ export function AdminPage({ readOnly = false }: { readOnly?: boolean }) {
           <Kpi label="Returning" value={kpis.returningGuests} />
           <Kpi label="No-show" value={`${kpis.noShowCount}${kpis.noShowRate != null ? ` · ${kpis.noShowRate}%` : ''}`} />
         </div>
+      )}
+      {attention.length > 0 && (
+        <section className="attention-box">
+          <h2>Требует внимания</h2>
+          {attention.map((item) => (
+            <Link key={item.label} className="admin-row" to={item.to}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+            </Link>
+          ))}
+        </section>
       )}
     </div>
   );
@@ -180,6 +217,15 @@ export function AdminOrdersPage({ readOnly = false }: { readOnly?: boolean }) {
           <div>
             <strong>{item.number} · {item.guest?.name}</strong>
             <p>{item.type} · {item.items.map((line) => line.name).join(', ')}</p>
+            {item.items.some((line) => line.comment) && (
+              <p>
+                Пожелания:{' '}
+                {item.items
+                  .filter((line) => line.comment)
+                  .map((line) => `${line.name}: ${line.comment}`)
+                  .join('; ')}
+              </p>
+            )}
             <p>{formatMoney(item.total)} · {item.status} {item.reservationId ? `· бронь #${item.reservationId}` : ''}</p>
           </div>
           {!readOnly && (
